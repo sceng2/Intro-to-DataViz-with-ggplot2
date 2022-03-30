@@ -1,0 +1,303 @@
+---
+title: "Geometries"
+subtitle: "Introduction to Data Visualization with ggplot2"
+output: html_notebook
+---
+
+Add a points layer to the base plot.
+
+Set the point transparency to 0.5.
+Set shape = ".", the point size of 1 pixel.
+
+Update the point shape to remove the line outlines by setting shape to 16.
+
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(forcats)
+
+# Plot price vs. carat, colored by clarity
+plt_price_vs_carat_by_clarity <- ggplot(diamonds, aes(carat, price, color = clarity))
+
+# Add a point layer with tiny points
+plt_price_vs_carat_by_clarity + geom_point(alpha = 0.5, shape = ".")
+
+# Set transparency to 0.5
+plt_price_vs_carat_by_clarity + geom_point(alpha = 0.5, shape = 16)
+
+```
+
+Create a base plot plt_mpg_vs_fcyl_by_fam of fcyl by mpg, colored by fam.
+Add a points layer to the base plot.
+
+Add some jittering by using position_jitter(), setting the width to 0.3.
+
+Alternatively, use position_jitterdodge(). Set jitter.width and dodge.width to 0.3 to separate subgroups further.
+
+
+```{r}
+# add 'fcyl' column as cyl column converted to a factor &
+# a 'fam' column as am column converted to a factor
+mtcars <- mutate(mtcars, fcyl = as_factor(cyl), fam = as_factor(am))
+
+# Plot base
+plt_mpg_vs_fcyl_by_fam <- ggplot(mtcars, 
+    aes(x = fcyl, y = mpg, color = fam))
+
+# Default points are shown for comparison
+plt_mpg_vs_fcyl_by_fam + geom_point()
+
+# Alter the point positions by jittering, width 0.3
+plt_mpg_vs_fcyl_by_fam + geom_point(position = position_jitter(width = 0.3))
+
+# Now jitter and dodge the point positions
+plt_mpg_vs_fcyl_by_fam + geom_point(position = position_jitterdodge(jitter.width = 0.3, dodge.width = 0.3))
+
+```
+
+Change the points layer into a jitter layer.
+Reduce the jitter layer's width by setting the width argument to 0.1.
+
+Let's use a different approach:
+
+Within geom_point(), set position to "jitter".
+
+Provide an alternative specification:
+
+Have the position argument call position_jitter() with a width of 0.1.
+
+
+```{r}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  # Swap for jitter layer with width 0.1
+  geom_jitter(alpha = 0.5,
+  width = 0.1)
+
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  # Set the position to jitter
+  geom_point(position = "jitter", alpha = 0.5)
+
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  # Use a jitter position function with width 0.1
+  geom_point(position = position_jitter(width = 0.1), alpha = 0.5)
+
+```
+
+
+Examine the Vocab dataset using str().
+Using Vocab, draw a plot of vocabulary vs education.
+Add a point layer.
+Replace the point layer with a jitter layer.
+
+
+```{r}
+library(carData) #load package that contains Vocab
+
+# Examine the structure of Vocab
+str(Vocab)
+
+# Plot vocabulary vs. education
+ggplot(Vocab, aes(x = education, y = vocabulary)) +
+# Add a point layer  
+geom_point()
+
+ggplot(Vocab, aes(education, vocabulary)) +
+  # Change to a jitter layer
+  geom_jitter()
+
+ggplot(Vocab, aes(education, vocabulary)) +
+  # Set the transparency to 0.2
+  geom_jitter(alpha = 0.2)
+  
+ggplot(Vocab, aes(education, vocabulary)) +
+  # Set the shape to 1
+  geom_jitter(alpha = 0.2, shape = 1)
+
+
+```
+
+Using mtcars, map mpg onto the x aesthetic.
+Add a histogram layer using geom_histogram().
+
+Set the histogram binwidth to 1.
+
+
+```{r}
+# Plot mpg
+ggplot(mtcars, aes(x = mpg)) +
+  # Add a histogram layer
+  geom_histogram()
+
+ggplot(mtcars, aes(x = mpg)) +
+  # Set the binwidth to 1
+  geom_histogram(binwidth = 1)
+
+# Map y to ..density..
+ggplot(mtcars, aes(x= mpg, y = ..density..)) +
+  geom_histogram(binwidth = 1)
+
+datacamp_light_blue <- "#51A8C9"
+
+ggplot(mtcars, aes(mpg, ..density..)) +
+  # Set the fill color to datacamp_light_blue
+  geom_histogram(binwidth = 1, fill = datacamp_light_blue)
+
+```
+
+Update the aesthetics so that the fill color of the bars is determined by fam.
+
+Update the histogram layer to position the bars side-by-side, that is, "dodge".
+
+Update the histogram layer so the bars' positions "fill" the y-axis.
+
+Update the histogram layer so bars are top of each other, using the "identity" position. So each bar can be seen, set alpha to 0.4.
+
+
+```{r}
+# Update the aesthetics so the fill color is by fam
+ggplot(mtcars, aes(mpg, fill = fam)) +
+  geom_histogram(binwidth = 1)
+
+ggplot(mtcars, aes(mpg, fill = fam)) +
+  # Change the position to dodge
+  geom_histogram(binwidth = 1, position = "dodge")
+
+ggplot(mtcars, aes(mpg, fill = fam)) +
+  # Change the position to fill
+  geom_histogram(binwidth = 1, position = "fill")
+
+ggplot(mtcars, aes(mpg, fill = fam)) +
+  # Change the position to identity, with transparency 0.4
+  geom_histogram(alpha = 0.4, binwidth = 1, position = "identity")
+```
+
+
+Using mtcars, plot fcyl, filled by fam.
+Add a bar layer using geom_bar().
+
+Set the bar position argument to "fill".
+
+Change the bar position argument to "dodge".
+
+
+```{r}
+# Plot fcyl, filled by fam
+ggplot(mtcars, aes(x = fcyl, fill = fam)) +
+  # Add a bar layer
+  geom_bar()
+
+ggplot(mtcars, aes(x = fcyl, fill = fam)) +
+  # Set the position to "fill"
+  geom_bar(position = "fill")
+
+ggplot(mtcars, aes(fcyl, fill = fam)) +
+  # Change the position to "dodge"
+  geom_bar(position = "dodge")
+
+```
+
+Use the functional form of the bar position: replace "dodge" with a call to position_dodge().
+Set its width to 0.2.
+
+Set the bar transparency level of the bars to 0.6.
+
+
+```{r}
+ggplot(mtcars, aes(cyl, fill = fam)) +
+  # Change position to use the functional form, with width 0.2
+  geom_bar(position = position_dodge(width = 0.2))
+
+ggplot(mtcars, aes(cyl, fill = fam)) +
+  # Set the transparency to 0.6
+  geom_bar(alpha = 0.6, position = position_dodge(width = 0.2))
+
+```
+
+
+Plot the Vocab dataset, mapping education onto x and vocabulary onto fill.
+
+Add a bar layer, setting position to "fill".
+
+Add a brewer fill scale, using the default palette (don't pass any arguments). Notice how this generates a warning message and an incomplete plot.
+
+
+```{r}
+# Plot education, filled by vocabulary
+ggplot(Vocab, aes(x = education, fill = vocabulary))
+
+# Plot education, filled by vocabulary
+ggplot(Vocab, aes(x = education, fill = vocabulary)) +
+  # Add a bar layer with position "fill"
+  geom_bar(position = "fill")
+
+# Plot education, filled by vocabulary
+ggplot(Vocab, aes(x = education, fill = vocabulary)) +
+  # Add a bar layer with position "fill"
+  geom_bar(position = "fill") +
+  # Add a brewer fill scale with default palette
+    scale_fill_brewer()
+
+```
+
+Print the head of the economics dataset.
+Plot unemploy vs. date as a line plot.
+
+Adjust the y-axis aesthetic of the plot so that it represents the proportion of the population that is unemployed.
+
+
+
+```{r}
+# Print the head of economics
+head(economics)
+
+# Using economics, plot unemploy vs. date
+ggplot(economics, aes(x = date, y = unemploy)) +
+  # Make it a line plot
+  geom_line()
+
+# Change the y-axis to the proportion of the population that is unemployed
+ggplot(economics, aes(x = date, y = unemploy/pop)) +
+  geom_line()
+
+```
+
+Use str() in the console to examine the structure of both fish.species and fish.tidy.
+Plot only the Rainbow salmon time series with geom_line().
+
+Plot only the Pink salmon time series with geom_line().
+
+Now try and plot all time series in a single plot.
+
+Plot the fish.tidy dataset, mapping Year to x and Capture to y.
+group by fish species within the aesthetics of geom_line().
+
+Let's add color to the previous plot to distinguish between the different time series.
+
+Plot the fish.tidy dataset again, this time making sure to color by Species.
+
+
+```{r}
+# Load fish.species file from csv, create tidyframe fish.tidy
+fish.species <- read.csv("fish_species.csv")
+fish.tidy <- gather(fish.species, Species, Capture, -Year)
+
+# Plot the Rainbow Salmon time series
+ggplot(fish.species, aes(x = Year, y = Rainbow)) +
+  geom_line()
+
+# Plot the Pink Salmon time series
+ggplot(fish.species, aes(x = Year, y = Pink)) +
+  geom_line()
+
+# Plot multiple time-series by grouping by species
+ggplot(fish.tidy, aes(x = Year, y = Capture)) +
+  geom_line(aes(group = Species))
+
+# Plot multiple time-series by coloring by species
+ggplot(fish.tidy, aes(x = Year, y = Capture, color = Species)) +
+  geom_line(aes(group = Species))
+
+```
+

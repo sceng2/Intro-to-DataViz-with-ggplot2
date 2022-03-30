@@ -1,0 +1,238 @@
+---
+subtitle: "Introduction to Data Visualization with ggplot2"
+title: "Chapter 2 - Aesthetics"
+output: html_notebook
+---
+  
+## All about aesthetics: color, shape and size  
+
+1. Map mpg onto the x aesthetic, and fcyl onto the y.  
+
+2. Swap the mappings of the first plot: fcyl onto the x aesthetic, and mpg onto the y.  
+
+3. Map wt onto x, mpg onto y, and fcyl onto color.  
+
+4. Modify the point layer of the previous plot by changing the shape argument to 1 and increasing the size to 4.  
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(forcats)
+
+# add 'fcyl' column as cyl column converted to a factor &
+# a 'fam' column as am column converted to a factor
+mtcars <- mutate(mtcars, fcyl = as_factor(cyl), fam = as_factor(am))
+levels(mtcars$fam) <- c("automatic", "manual")
+
+# Map x to mpg and y to fcyl
+ggplot(mtcars, aes(x = mpg, y = fcyl)) +
+  geom_point()
+
+# Swap mpg and fcyl
+ggplot(mtcars, aes(x = fcyl, y = mpg)) +
+  geom_point()
+
+# Map x to wt, y to mpg and color to fcyl
+ggplot(mtcars, aes(x = wt, y = mpg, color = fcyl)) +
+  geom_point()
+
+##
+
+ggplot(mtcars, aes(wt, mpg, color = fcyl)) +
+  # Set the shape and size of the points
+  geom_point(shape = 1, size = 4)
+
+```
+  
+***  
+
+## All about aesthetics: color vs. fill  
+
+
+1. Change the aesthetics so that fcyl maps to fill rather than color.  
+
+2. In geom_point() change the shape argument to 21 and add an alpha argument set to 0.6.  
+
+3. In the ggplot() aesthetics, map fam to color.  
+
+
+```{r}
+# Map fcyl to fill
+ggplot(mtcars, aes(wt, mpg, fill = fcyl)) +
+  geom_point(shape = 1, size = 4)
+
+ggplot(mtcars, aes(wt, mpg, fill = fcyl)) +
+  # Change point shape; set alpha
+  geom_point(alpha = 0.6, shape = 21, size = 4)
+
+###Map color to fam
+ggplot(mtcars, aes(wt, mpg, color = fam, 
+                   fill = fcyl)) +
+  geom_point(alpha = 0.6, shape = 21, size = 4)
+```
+
+***  
+
+## All about aesthetics: comparing aesthetics  
+
+
+1. Using mtcars, create a plot base layer, plt_mpg_vs_wt. Map mpg onto y and wt onto x.  
++ Add a point layer, mapping the categorical no. of cylinders, fcyl, onto size.
+
+2. Change the mapping. This time fcyl should be mapped onto alpha.  
+
+3. Change the mapping again. This time fycl should be mapped onto shape.  
+
+4. Swap the geom layer: change points to text.  
++ Change the mapping again. This time fycl should be mapped onto label.  
+
+```{r}
+# Establish the base layer
+plt_mpg_vs_wt <- ggplot(mtcars, aes(x = wt, y = mpg))
+
+# Map fcyl to size
+plt_mpg_vs_wt +
+  geom_point(aes(size = fcyl))
+
+# Map fcyl to alpha, not size
+plt_mpg_vs_wt +
+  geom_point(aes(alpha = fcyl))
+
+# Map fcyl to shape, not alpha
+plt_mpg_vs_wt +
+  geom_point(aes(shape = fcyl))
+
+# Use text layer and map fcyl to label
+plt_mpg_vs_wt +
+  geom_text(aes(label = fcyl))
+```
+
+***  
+
+## All about attributes: color, shape, size and alpha  
+
+1. Set the point color to my_blue and the alpha to 0.6.  
+
+2. Change the color mapping to a fill mapping. That is, fcyl should be mapped onto fill.  
++ Set the color of the points to my_blue, point size to 10 and the point shape to 1.  
+
+
+```{r}
+# A hexadecimal color
+my_blue <- "#4ABEFF"
+
+ggplot(mtcars, aes(wt, mpg)) +
+  # Set the point color and alpha
+  geom_point(alpha = 0.6, color = my_blue)
+
+# Change the color mapping to a fill mapping
+ggplot(mtcars, aes(wt, mpg, fill = fcyl)) +
+  # Set point size and shape
+  geom_point(color = my_blue, size = 10, shape = 1)
+```
+
+***  
+
+## All about attributes: conflicts with aesthetics  
+
+1. Add a point layer, setting alpha, the transparency, to 0.5.  
+
+2. Add a text layer, setting the label to the rownames of the dataset mtcars, and the color to "red".  
+
+3. Add a point layer, setting the shape to 24 and the color to "yellow".  
+
+
+```{r}
+#
+ggplot(mtcars, aes(wt, mpg, color = fcyl)) +
+  # Add point layer with alpha 0.5
+  geom_point(alpha = 0.5)
+
+ggplot(mtcars, aes(wt, mpg, color = fcyl)) +
+  # Add text layer with label rownames(mtcars) and color red
+  geom_text(label = row.names(mtcars), color = "red")
+
+ggplot(mtcars, aes(wt, mpg, color = fcyl)) +
+  # Add points layer with shape 24 and color yellow
+  geom_point(color = "yellow", shape = 24)
+```
+
+***  
+
+## Going all out  
+
+
+1. Use mtcars to draw a plot of qsec vs. mpg, colored by fcyl.  
++ Add a point layer.  
+2. Add another aesthetic: map fam onto shape.  
+3. Add another two aesthetics: map hp divided by wt onto size.  
+
+```{r}
+# 3 aesthetics: qsec vs. mpg, colored by fcyl
+ggplot(mtcars, aes(x = mpg, y= qsec, color = fcyl)) +
+  geom_point()
+
+# 4 aesthetics: add a mapping of shape to fam 
+ggplot(mtcars, aes(mpg, qsec, color = fcyl, shape = fam)) + geom_point()
+
+# 5 aesthetics: add a mapping of size to hp / wt
+ggplot(mtcars, aes(mpg, qsec, color = fcyl, shape = fam, 
+                   size = hp / wt)) + geom_point()
+
+```
+
+***  
+
+## Updating aesthetic labels  
+
+
+1. Set the x-axis label to "Number of Cylinders", and the y-axis label to "Count" using the x and y arguments of labs(), respectively.  
+
+2. Implement a custom fill color scale using scale_fill_manual(). Set the first argument to "Transmission", and values to palette.  
+
+3. Modify the code to set the position to dodge so that the bars for transmissions are displayed side by side.  
+
+
+```{r}
+ggplot(mtcars, aes(fcyl, fill = fam)) +
+  geom_bar() +
+  # Set the axis labels
+  labs(x = "Number of Cylinders", y = "Count")
+
+palette <- c(automatic = "#377EB8", manual = "#E41A1C")
+
+ggplot(mtcars, aes(fcyl, fill = fam)) +
+  geom_bar() + labs(x = "Number of Cylinders", y = "Count") +
+  # Set the fill color scale
+  scale_fill_manual("Transmission", values = palette)
+
+
+# Set the position
+ggplot(mtcars, aes(fcyl, fill = fam)) +
+  geom_bar(position = "dodge") +
+  labs(x = "Number of Cylinders", y = "Count")
+  scale_fill_manual("Transmission", values = palette)
+```
+
+***  
+
+## Setting a dummy aesthetic  
+
+
+1. Using mtcars, plot 0 vs. mpg.  
+2. Make a scatter plot and add "jitter" to it.  
+
+3. Use ylim() to set the limits on the y-axis from -2 to 2.  
+
+```{r}
+# Plot 0 vs. mpg
+ggplot(mtcars, aes(x = mpg, y = 0)) +
+  # Add jitter 
+  geom_point(position = "jitter")
+
+ggplot(mtcars, aes(mpg, 0)) +
+  geom_jitter() +
+  # Set the y-axis limits
+  ylim(-2, 2)
+```
+
